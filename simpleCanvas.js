@@ -72,8 +72,7 @@
         c.resize(width, height);
 
         return c;
-    }
-    
+    }    
 
     // Render text on the canvas
     function text(x, y, text, options) {
@@ -81,7 +80,7 @@
 
         options = options || {};
 
-        e.style.borderBottom = '';
+        e.style.borderTop = '';
         e.style.display = 'block';
         e.style.width = options.width ? options.width + 'px' : '';
         e.style.height = options.height ? options.height + 'px' : '';
