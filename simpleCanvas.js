@@ -200,7 +200,7 @@
         var e, pointer;
         pointer = this._pointer;
 
-        if (this._buffer.length > pointer) {
+        if (this._buffer.length > pointer && pointer >= 0) {
             e = this._buffer[pointer];            
         } else {
             this.increaseBuffer();
