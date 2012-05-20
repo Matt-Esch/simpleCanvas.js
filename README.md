@@ -10,12 +10,13 @@ See simpleCanvas.html for an example. API docs and further examples will be deve
 
 ### Todo
 
-  - Rectangle rendering capability
-  - Text rendering capability
+  - ~~Rectangle rendering capability~~
+  - ~~Text rendering capability~~
   - Image rendering capability
   - Rotation capability
   - Element position anchoring
   - Line rendering capability (rotated rectangle drawing sugar)
+  - Single element removal
 
   - **Unit tests**
   - **API docs**
