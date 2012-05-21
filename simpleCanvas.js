@@ -8,7 +8,6 @@
 
         options = options || {};
 
-
         if (typeof container === 'string') {
             container = document.getElementById(container);
         } else if (!container.appendChild) {
@@ -23,7 +22,7 @@
         if (typeof options.bufferSize === 'number') {
             bufferSize = Math.max(0, Math.floor(options._bufferSize));
         } else {
-            bufferSize = 300; // Default the buffer to 300
+            bufferSize = 300;       // Default the buffer to 300
         }
 
         if (typeof options.bufferIncrement === 'number') {
@@ -72,11 +71,13 @@
         c.resize(width, height);
 
         return c;
-    }    
+    }
 
     // Render text on the canvas
     function text(x, y, text, options) {
-        var e = this._getDiv();
+        var e = this._getDiv(),
+            offsetX = 0,
+            offsetY = 0;
 
         options = options || {};
 
@@ -84,10 +85,8 @@
         e.style.display = 'block';
         e.style.width = options.width ? options.width + 'px' : '';
         e.style.height = options.height ? options.height + 'px' : '';
-        e.style.left = (x  || 0) + 'px';
-        e.style.top = (y || 0) + 'px';
-
-        // font options
+        
+        // Font options
         e.style.fontFamily = options.fontFamily || '';
         e.style.fontStyle = options.fontStyle || '';
         e.style.fontVariant = options.fontVariant || '';
@@ -99,7 +98,7 @@
         if (typeof options.whiteSpace === 'string') {
             e.style.whiteSpace = options.whiteSpace;
         } else {
-            e.style.whiteSpace = 'nowrap';
+            e.style.whiteSpace = options.width ? 'normal' : 'nowrap';
         }
 
         if (typeof e.textContent !== 'undefined') {
@@ -107,6 +106,27 @@
         } else {
             e.innerText = text || '';
         }
+        
+        // Horizontal anchoring
+        if (options.anchorX) {
+            if (options.anchorX === 'middle') {
+                offsetX = e.clientWidth / 2;
+            } else if (options.anchorX === 'right') {
+                offsetX = e.clientWidth;
+            }
+        }
+        
+        // Vertical anchoring
+        if (options.anchorY) {
+            if (options.anchorY === 'middle') {
+                offsetY = e.clientHeight / 2;
+            } else if (options.anchorY === 'bottom') {
+                offsetY = e.clientHeight;
+            }
+        }
+        
+        e.style.left = ((x  || 0) - offsetX) + 'px';
+        e.style.top = ((y || 0) - offsetY) + 'px';
 
         return e;
     }
@@ -114,16 +134,37 @@
     // Render a rectangle on the canvas
     function rectangle(x, y, width, height, color, options) {
         var e = this._getDiv(), 
-            offset = 0;
+            offsetX = 0,
+            offsetY = 0;
 
+        options = options || {};
+            
         e.style.borderTop = height + 'px solid ' + color;
         e.style.display = 'block';
         e.style.height = '0px';
         e.style.fontSize = '0px';
         e.style.width = width + 'px';
         
-        e.style.left = (x || 0) + 'px';
-        e.style.top = (y || 0)  + 'px';
+        // Horizontal anchoring
+        if (options.anchorX) {
+            if (options.anchorX === 'middle') {
+                offsetX = width / 2;
+            } else if (options.anchorX === 'right') {
+                offsetX = width;
+            }
+        }
+        
+        // Vertical anchoring
+        if (options.anchorY) {
+            if (options.anchorY === 'middle') {
+                offsetY = height / 2;
+            } else if (options.anchorY === 'bottom') {
+                offsetY = height;
+            }
+        }
+        
+        e.style.left = ((x  || 0) - offsetX) + 'px';
+        e.style.top = ((y || 0) - offsetY) + 'px';
 
         if (e.textContent) {
             e.textContent = '';
@@ -144,6 +185,7 @@
             e = buffer[i];
             e.style.display = 'none';
         }
+        
         this._pointer = buffer.length > 0 ? 0 : -1;
     }
 

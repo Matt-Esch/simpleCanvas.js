@@ -1,0 +1,73 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Test anchoring</title>
+<script type="text/javascript" src="simpleCanvas.js"></script>
+<style type="text/css">
+    body {
+        font-family: arial;
+    }
+</style>
+<body>
+
+<div id="canvas"></div>
+
+
+<script type="text/javascript">
+(function () {
+    var start = new Date();
+    var c = simpleCanvas('canvas', { width: 640, height: 480 });
+    c.rectangle(320, 240, 100, 100, '#234567', { anchorY: 'top', anchorX: 'left' });
+    c.rectangle(320, 240, 100, 100, '#334567', { anchorY: 'top', anchorX: 'middle' });
+    c.rectangle(320, 240, 100, 100, '#434567', { anchorY: 'top', anchorX: 'right' });
+    c.rectangle(320, 240, 100, 100, '#534567', { anchorY: 'middle', anchorX: 'left' });
+    c.rectangle(320, 240, 100, 100, '#634567', { anchorY: 'middle', anchorX: 'middle' });
+    c.rectangle(320, 240, 100, 100, '#734567', { anchorY: 'middle', anchorX: 'right' });
+    c.rectangle(320, 240, 100, 100, '#834567', { anchorY: 'bottom', anchorX: 'left' });
+    c.rectangle(320, 240, 100, 100, '#934567', { anchorY: 'bottom', anchorX: 'middle' });
+    c.rectangle(320, 240, 100, 100, '#A34567', { anchorY: 'bottom', anchorX: 'right' });
+    
+    // Anchor bottom right
+    c.rectangle(220, 140, 4, 4, '#04019E', { anchorY: 'middle', anchorX: 'middle'});
+    c.text(220, 140, 'bottom right', { anchorY: 'bottom', anchorX: 'right' });
+    
+    // Anchor bottom middle
+    c.rectangle(320, 140, 4, 4, '#04019E', { anchorY: 'middle', anchorX: 'middle' });
+    c.text(320, 140, 'bottom middle', { anchorY: 'bottom', anchorX: 'middle' });
+    
+    // Anchor bottom left
+    c.rectangle(420, 140, 4, 4, '#04019E', { anchorY: 'middle', anchorX: 'middle' });
+    c.text(420, 140, 'bottom left', { anchorY: 'bottom', anchorX: 'left' });
+    
+    // Anchor middle right
+    c.rectangle(220, 240, 4, 4, '#04019E', { anchorY: 'middle', anchorX: 'middle'});
+    c.text(220, 240, 'middle right', { anchorY: 'middle', anchorX: 'right' });
+    
+    // Anchor middle middle
+    c.rectangle(320, 240, 4, 4, '#04019E', { anchorY: 'middle', anchorX: 'middle' });
+    c.text(320, 240, 'middle middle', { anchorY: 'middle', anchorX: 'middle', color: '#ffffff' });
+    
+    // Anchor middle left
+    c.rectangle(420, 240, 4, 4, '#04019E', { anchorY: 'middle', anchorX: 'middle' });
+    c.text(420, 240, 'middle left', { anchorY: 'middle', anchorX: 'left' });
+    
+    // Anchor top right
+    c.rectangle(220, 340, 4, 4, '#04019E', { anchorY: 'middle', anchorX: 'middle'});
+    c.text(220, 340, 'top right', { anchorY: 'top', anchorX: 'right' });
+    
+    // Anchor top middle
+    c.rectangle(320, 340, 4, 4, '#04019E', { anchorY: 'middle', anchorX: 'middle' });
+    c.text(320, 340, 'top middle', { anchorY: 'top', anchorX: 'middle' });
+    
+    // Anchor top left
+    c.rectangle(420, 340, 4, 4, '#04019E', { anchorY: 'middle', anchorX: 'middle' });
+    c.text(420, 340, 'top left', { anchorY: 'top', anchorX: 'left' });    
+    console.log((new Date()).getTime() - start.getTime());
+}())
+</script>
+</body>
+
+
+
+
+
+
