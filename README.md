@@ -16,7 +16,7 @@ See simpleCanvas.html for an example. API docs and further examples will be deve
   - Rotation capability
   - ~~Element position anchoring~~
   - Line rendering capability (rotated rectangle drawing sugar)
-  ~~ Single element updating and removal ~~ **Not implementing this feature, the canvas will behave like a rasterised canvas**
+  - ~~Single element updating and removal~~ **Not implementing this feature, the canvas will behave like a rasterised canvas**
 
   - **Unit tests**
   - **API docs**
