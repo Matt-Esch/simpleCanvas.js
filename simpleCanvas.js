@@ -53,6 +53,12 @@
             whiteSpace: 'normal',
             width: ''
         },
+        
+        lineOptions = {
+            anchorX: 'left',
+            anchorY: 'middle',
+            angle: 0
+        },
 
         imgOptions = {
             anchorX: 'left',
@@ -77,16 +83,30 @@
         divElement = document.createElement('div'),
         imgElement = document.createElement('img'),
         
-        divArgs = {},        
+        divArgs = {},
+        lineArgs = {},
         
-        textProperty;
+        textProperty,
+        transformProperty,
+        
+        DEGREES = 180 / Math.PI;
     
-    
-    if ('textContent' in divElement) {
-        textProperty = 'textContent';
-    } else {
-        textProperty = 'innerText';
-    }
+    // Test DOM element properties for compatibility
+    textProperty = firstProperty(divElement, 'textContent', 'innerText');
+    transformProperty = firstProperty(
+        divElement.style,
+        'transform',
+        'webkitTransform',
+        'MozTransform',
+        'oTransform',
+        'msTransform');
+    transformOriginProperty = firstProperty(
+        divElement.style,
+        'transformOrigin',
+        'webkitTransformOrigin',
+        'MozTransformOrigin',
+        'oTransformOrigin',
+        'msTransformOrigin');
     
     w.simpleCanvas = initCanvas;
 
@@ -143,6 +163,7 @@
             clear: clear,
             decreaseBuffer: decreaseBuffer,
             increaseBuffer: increaseBuffer,
+            line: line,
             rect: rect,
             resize: resize,
             text: text
@@ -157,21 +178,22 @@
     function div(x, y, options) {
         var e = this._getDiv(),
             offsetX = 0,
-            offsetY = 0;
+            offsetY = 0,
+            style = e.style;
 
-        e.style.borderTop = options.borderTop;
-        e.style.display = options.display;
-        e.style.width = options.width;
-        e.style.height = options.height;
+        style.borderTop = options.borderTop;
+        style.display = options.display;
+        style.width = options.width;
+        style.height = options.height;
 
         // Font options
-        e.style.fontFamily = options.fontFamily;
-        e.style.fontStyle = options.fontStyle;
-        e.style.fontVariant = options.fontVariant;
-        e.style.fontWeight = options.fontWeight;
-        e.style.fontSize = options.fontSize;
-        e.style.color = options.color;
-        e.style.whiteSpace = options.whiteSpace;
+        style.fontFamily = options.fontFamily;
+        style.fontStyle = options.fontStyle;
+        style.fontVariant = options.fontVariant;
+        style.fontWeight = options.fontWeight;
+        style.fontSize = options.fontSize;
+        style.color = options.color;
+        style.whiteSpace = options.whiteSpace;
 
         // Text content
         e[textProperty] = options.text;
@@ -189,23 +211,34 @@
         if (options.anchorY === 'top') {
             offsetY = 0;
         } else if (options.anchorY === 'middle') {
-            offsetY = e.offsetHeight / 2;
+            offsetY = (e.offsetHeight - e.clientHeight) / 2;
         } else if (options.anchorY === 'bottom') {
-            offsetY = e.offsetHeight;
+            offsetY = e.offsetHeight - e.clientHeight;
+        }
+        
+        offsetX += options.offsetX;
+        offsetY += options.offsetY;
+        
+        // Rotation
+        if (options.angle) {
+            style[transformOriginProperty] = offsetX + 'px ' + offsetY + 'px';
+            style[transformProperty] = "rotate(" + options.angle + 'deg)';
+        } else {
+            style[transformProperty] = '';          
         }
 
-        e.style.left = (((x  || 0) - offsetX) >> 0) + 'px';
-        e.style.top = (((y || 0) - offsetY) >> 0) + 'px';
+        style.left = (((x  || 0) - offsetX)) + 'px';
+        style.top = (((y || 0) - offsetY)) + 'px';
 
         return e;
     }
   
     // Render text on the canvas
-    function text(x, y, text, options) {
+    function text(x, y, textContent, options) {
 
         var o = extend(divArgs, textOptions);
         
-        o.text = text;
+        o.text = textContent;
         
         if (options) {
             if (options.width) {
@@ -280,7 +313,7 @@
             }
         }
         
-        div.call(this, x, y, o);
+        return div.call(this, x, y, o);
     }
 
     // Render a rectangle on the canvas
@@ -313,7 +346,20 @@
             }
         }
 
-        div.call(this, x, y, o);
+        return div.call(this, x, y, o);
+    }
+    
+    function line(x1, y1, x2, y2, thickness, color) {
+        var o = extend(lineArgs, lineOptions),
+            x, y, dy, dx, width;
+            
+        dy = y2 - y1;
+        dx = x2 - x1;
+        
+        o.angle = Math.atan2(dy, dx) * DEGREES;
+        width = Math.sqrt((dy * dy) + (dx * dx));
+        
+        return rect.call(this, x, y, width, thickness, color, o);        
     }
 
     // Replace all rendered divs back in the buffer
@@ -322,7 +368,7 @@
             pointer = this._pointer,
             i, e;
 
-        for (i = 0; i < pointer; i++) {
+        for (i = 0; i < pointer; i += 1) {
             e = buffer[i];
             e.style.display = 'none';
         }
@@ -342,7 +388,7 @@
             return;
         }
 
-        for (i = 0; i < count; i++) {
+        for (i = 0; i < count; i += 1) {
             e = divElement.cloneNode(false);
             e.style.display = 'none';
             e.style.position = 'absolute';
@@ -371,7 +417,7 @@
 
         reduction = Math.max(0, Math.min(count, buffer.length - this._pointer));
 
-        for (i = 0; i < reduction; i++) {
+        for (i = 0; i < reduction; i += 1) {
             e = buffer.pop(e);
             canvas.removeChild(e);
             e = null;
@@ -410,7 +456,7 @@
     }
 
     function extend(target) {
-        var source,  name, i;
+        var source, name, i;
 
         for (i = 1; i < arguments.length; i += 1) {
             source = arguments[i];
@@ -424,5 +470,18 @@
 
         return target;
     }
+    
+    function firstProperty(object) {
+        var property, i;
 
-}(window))
+        for (i = 1; i < arguments.length; i += 1) {
+            property = arguments[i];
+            if (object[property] !== undefined) {
+                return property;
+            }            
+        }
+        
+        return null;
+    }
+
+}(window));

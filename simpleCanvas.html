@@ -14,15 +14,27 @@
 
 <script type="text/javascript">
 //(function () {
-    var c = simpleCanvas('canvas');
-    c.rect(0,0,50,50,'#000000');
+    var c = simpleCanvas('canvas'),
+        r = { angle: 45, anchorX: 'middle', anchorY: 'middle' };
+    
+    c.rect( 0, 0,50,50,'#000000');
+    c.rect(25,25,30,30,'#ac4588', r);
+    
     c.rect(25,25,50,50,'#234567');
+    c.rect(50,50,30,30,'#000000', r);
+    
     c.rect(50,50,50,50,'#993355');
-    c.rect(75,75,50,50,'#ac4588');
-    c.text(55, 0, "This");
-    c.text(80, 25, "is");
+    c.rect(75,75,30,30,'#234567', r);
+    
+    c.rect( 75, 75,50,50,'#ac4588');
+    c.rect(100,100,30,30,'#993355', r);
+    
+    c.text( 55,  0, "This");
+    c.text( 80, 25, "is");
     c.text(105, 50, "simple");
     c.text(130, 75, "canvas");
+    
+    c.line(0,0,125,125,1,'#fff')
 //}())
 </script>
 </body>
