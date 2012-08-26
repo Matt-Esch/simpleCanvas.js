@@ -29,7 +29,7 @@ See simpleCanvas.html for an example. API docs and further examples will be deve
 ### Licence
 
 simpleCanvas is licensed under the **"Modified BSD" 3-clause licence**. Essentially this software is open source and
-free to use in commercial and non-commercial products. The 3-clause portion of the license ensures that the
+free to use in commercial and non-commercial products. The 3-clause portion of the licence ensures that the
 copyright notices are retained and that the names of contributors are not used for endorsement purposes
 without prior written consent. The 3-clause BSD licence **is compatible with the GPL**.
 
