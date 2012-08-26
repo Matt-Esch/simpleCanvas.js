@@ -13,9 +13,9 @@ See simpleCanvas.html for an example. API docs and further examples will be deve
   - ~~Rectangle rendering capability~~
   - ~~Text rendering capability~~
   - Image rendering capability
-  - Rotation capability
+  - Rotation capability (Currently works in IE9+, webkit, moz, opera)
   - ~~Element position anchoring~~
-  - Line rendering capability (rotated rectangle drawing sugar)
+  - ~~Line rendering capability~~ (rotated rectangle drawing sugar, see Rotation capability)
   - ~~Single element updating and removal~~ **Not implementing this feature, the canvas will behave like a rasterised canvas**
 
   - **Unit tests**
