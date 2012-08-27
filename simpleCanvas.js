@@ -11,7 +11,7 @@
             border: 'none',
             overflow: 'hidden'
         },
-        
+
         rectOptions = {
             anchorX: 'left',
             anchorY: 'top',
@@ -32,7 +32,7 @@
             whiteSpace: 'normal',
             width: ''
         },
-        
+
         textOptions = {
             anchorX: 'left',
             anchorY: 'top',
@@ -53,7 +53,7 @@
             whiteSpace: 'normal',
             width: ''
         },
-        
+
         lineOptions = {
             anchorX: 'left',
             anchorY: 'middle',
@@ -79,18 +79,20 @@
             whiteSpace: 'normal',
             width: ''
         },
-        
+
         divElement = document.createElement('div'),
         imgElement = document.createElement('img'),
-        
+
         divArgs = {},
         lineArgs = {},
-        
+
         textProperty,
         transformProperty,
-        
+
         DEGREES = 180 / Math.PI;
-    
+        RADIANS = 1 / DEGREES,
+        round = Math.round;
+
     // Test DOM element properties for compatibility
     textProperty = firstProperty(divElement, 'textContent', 'innerText');
     transformProperty = firstProperty(
@@ -107,7 +109,7 @@
         'MozTransformOrigin',
         'oTransformOrigin',
         'msTransformOrigin');
-    
+
     w.simpleCanvas = initCanvas;
 
     // Initialise a new canvas
@@ -124,27 +126,27 @@
         if (!container) {
             throw "Invalid container type";
         }
-        
+
         if (options) {
             if (typeof options.bufferSize === 'number') {
                 o.bufferSize = Math.max(0, options._bufferSize >> 0);
             }
-            
+
             if (typeof options.bufferIncrement === 'number') {
                 o.bufferIncrement = Math.max(1, options.bufferIncrement >> 0);
             }
-            
+
             if (typeof options.width === 'number') {
                 o.width = Math.floor(options.width) + 'px';
             }
-            
+
             if (typeof options.height === 'number') {
                 o.height = Math.max(0, options.height >> 0) + 'px';
             }
         }
 
         canvas = divElement.cloneNode('false');
-        
+
         canvas.style.position = o.position;
         canvas.style.margin = o.margin;
         canvas.style.padding = o.padding;
@@ -179,7 +181,9 @@
         var e = this._getDiv(),
             offsetX = 0,
             offsetY = 0,
-            style = e.style;
+            style = e.style,
+            width, height, r, nCos, nSin, nCosX, nCosY, nSinX, nSinY,
+            nCosW, nCosH, nSinW, nSinH, minX, minY;
 
         style.borderTop = options.borderTop;
         style.display = options.display;
@@ -198,48 +202,72 @@
         // Text content
         e[textProperty] = options.text;
 
+        width = e.offsetWidth;
+        height = e.offsetHeight - e.clientHeight;
+
         // Horizontal anchoring
         if (options.anchorX === 'left') {
             offsetX = 0;
         } else if (options.anchorX === 'middle') {
-            offsetX = e.offsetWidth / 2;
+            offsetX = width / 2;
         } else if (options.anchorX === 'right') {
-            offsetX = e.offsetWidth;
+            offsetX = width ;
         }
 
         // Vertical anchoring
         if (options.anchorY === 'top') {
             offsetY = 0;
         } else if (options.anchorY === 'middle') {
-            offsetY = (e.offsetHeight - e.clientHeight) / 2;
+            offsetY = height / 2;
         } else if (options.anchorY === 'bottom') {
-            offsetY = e.offsetHeight - e.clientHeight;
+            offsetY = height;
         }
-        
+
         offsetX += options.offsetX;
         offsetY += options.offsetY;
-        
+
         // Rotation
         if (options.angle) {
             style[transformOriginProperty] = offsetX + 'px ' + offsetY + 'px';
-            style[transformProperty] = "rotate(" + options.angle + 'deg)';
+            if (transformProperty) {
+                style[transformProperty] = "rotate(" + options.angle + 'deg)';
+            } else {
+                // Compute tranformation matrix and new offset for DXImageTransform
+                r = options.angle * RADIANS,
+                nCos = Math.cos(r),
+                nSin = Math.sin(r),
+                nCosX = nCos * offsetX,
+                nCosY = nCos * offsetY,
+                nSinX = nSin * offsetX,
+                nSinY = nSin * offsetY,
+                nCosW = nCos * width,
+                nCosH = nCos * height,
+                nSinW = nSin * width,
+                nSinH = nSin * height,
+                minX = Math.min(0, nCosW, nCosW - nSinH, -nSinH)
+                minY = Math.min(0, nCosH, nSinW - nCosH, nSinW);
+
+                style.filter = "progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand', M11=" + nCos + ", M12=" + -1*nSin + ", M21=" + nSin + ", M22=" + nCos + ")";
+                offsetX = (nCosX - nSinY) - minX;
+                offsetY = (nCosY + nSinX) - minY;
+            }
         } else {
-            style[transformProperty] = '';          
+            style[transformProperty || 'filter'] = '';
         }
 
-        style.left = (((x  || 0) - offsetX)) + 'px';
-        style.top = (((y || 0) - offsetY)) + 'px';
+        style.left = round((x || 0) - offsetX) + 'px';
+        style.top = round((y || 0) - offsetY) + 'px';
 
         return e;
     }
-  
+
     // Render text on the canvas
     function text(x, y, textContent, options) {
 
         var o = extend(divArgs, textOptions);
-        
+
         o.text = textContent;
-        
+
         if (options) {
             if (options.width) {
                 if (typeof options.width === 'number') {
@@ -249,7 +277,7 @@
                     o.width  = options.width;
                 }
             }
-            
+
             if (options.height) {
                 if (typeof options.height === 'number') {
                     o.width = options.height + 'px';
@@ -263,23 +291,23 @@
             if (options.fontFamily) {
                 o.fontFamily = options.fontFamily;
             }
-            
+
             if (options.fontStyle) {
                 o.fontStyle = options.fontStyle;
             }
-            
+
             if (options.fontVariant) {
                 o.fontVariant = options.fontVariant;
             }
-            
+
             if (options.fontWeight) {
                 o.fontWeight = options.fontWeight;
             }
-            
+
             if (options.fontSize) {
                 o.fontSize = options.fontSize;
             }
-            
+
             if (options.color) {
                 o.color = options.color;
             }
@@ -290,29 +318,29 @@
             } else {
                 o.whiteSpace = options.width ? 'normal' : 'nowrap';
             }
-            
+
             // position and rotation
             if (options.angle) {
                 o.angle = options.angle;
             }
-            
+
             if (options.anchorX) {
                 o.anchorX = options.anchorX;
             }
-            
+
             if (options.anchorY) {
                 o.anchorY = options.anchorY;
             }
-            
+
             if (options.offsetX) {
                 o.offsetX = options.offsetX;
             }
-            
+
             if (options.offsetY) {
                 o.offsetY = options.offsetY;
             }
         }
-        
+
         return div.call(this, x, y, o);
     }
 
@@ -328,19 +356,19 @@
             if (options.angle) {
                 o.angle = options.angle;
             }
-            
+
             if (options.anchorX) {
                 o.anchorX = options.anchorX;
             }
-            
+
             if (options.anchorY) {
                 o.anchorY = options.anchorY;
             }
-            
+
             if (options.offsetX) {
                 o.offsetX = options.offsetX;
             }
-            
+
             if (options.offsetY) {
                 o.offsetY = options.offsetY;
             }
@@ -348,18 +376,18 @@
 
         return div.call(this, x, y, o);
     }
-    
+
     function line(x1, y1, x2, y2, thickness, color) {
         var o = extend(lineArgs, lineOptions),
             x, y, dy, dx, width;
-            
+
         dy = y2 - y1;
         dx = x2 - x1;
-        
+
         o.angle = Math.atan2(dy, dx) * DEGREES;
         width = Math.sqrt((dy * dy) + (dx * dx));
-        
-        return rect.call(this, x, y, width, thickness, color, o);        
+
+        return rect.call(this, x, y, width, thickness, color, o);
     }
 
     // Replace all rendered divs back in the buffer
@@ -460,7 +488,7 @@
 
         for (i = 1; i < arguments.length; i += 1) {
             source = arguments[i];
-            
+
             for (name in source) {
                 if (source.hasOwnProperty(name)) {
                     target[name] = source[name];
@@ -470,7 +498,7 @@
 
         return target;
     }
-    
+
     function firstProperty(object) {
         var property, i;
 
@@ -478,9 +506,9 @@
             property = arguments[i];
             if (object[property] !== undefined) {
                 return property;
-            }            
+            }
         }
-        
+
         return null;
     }
 

@@ -13,10 +13,11 @@ See simpleCanvas.html for an example. API docs and further examples will be deve
   - ~~Rectangle rendering capability~~
   - ~~Text rendering capability~~
   - Image rendering capability
-  - Rotation capability (Currently works in IE9+, webkit, moz, opera)
+  - ~~Rotation capability~~
   - ~~Element position anchoring~~
   - ~~Line rendering capability~~ (rotated rectangle drawing sugar, see Rotation capability)
   - ~~Single element updating and removal~~ **Not implementing this feature, the canvas will behave like a rasterised canvas**
+  - VML-based fallback hook onbeforeprint/onafterprint for printing rotated objects in IE6/7/8
 
   - **Unit tests**
   - **API docs**
@@ -24,7 +25,7 @@ See simpleCanvas.html for an example. API docs and further examples will be deve
 ### Limitations
   - No complex objects such as arbitrary polygons or circles
   - No stroke styles or other styles, it's simply rectangles, lines and images, but it's fast. Stroke can be constructed manually if required.
-  - Text is placed as normal text elements inside a div. The raises concerns about printing because light colours become dark on printing. The simplest solution is to use dark text on light backgrounds to facilitate printing. Could consider writing a bitmap/png font rendering system from images, but it seems unnecessary.
+  - Text is placed as normal text elements inside a div. This raises concerns about printing because light colours become dark on printing. The simplest solution is to use dark text on light backgrounds to facilitate printing. Could consider writing a bitmap/png font rendering system from images, but it seems unnecessary, or replacing with SVG/VML elements.
 
 ### Licence
 
