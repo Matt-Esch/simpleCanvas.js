@@ -203,7 +203,12 @@
         e[textProperty] = options.text;
 
         width = e.offsetWidth;
-        height = e.offsetHeight - e.clientHeight;
+
+        if (options.borderTop === textOptions.borderTop) {
+            height = e.clientHeight
+        } else {
+            height = e.offsetHeight - e.clientHeight;
+        }
 
         // Horizontal anchoring
         if (options.anchorX === 'left') {
